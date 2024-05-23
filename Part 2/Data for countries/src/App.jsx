@@ -8,6 +8,7 @@ const App = () => {
   const [filter, setFilter] = useState("");
   const [toShow, setToShow] = useState(null);
   const [weather, setWeather] = useState(null);
+  const [filtered, setFiltered] = useState([]);
 
   useEffect(() => {
     service
@@ -17,9 +18,26 @@ const App = () => {
       .catch(error =>  console.log("Something went wrong."))
   }, [])
 
+  useEffect(() => {
+    setFiltered(data.filter(each => each.name.common.toLowerCase().includes(filter.toLowerCase())))
+  }, [filter])
+
+  useEffect(() => {
+    if (filtered.length === 1) setToShow(filtered[0]);
+    else setToShow(null);
+  }, [filtered])
+
+  useEffect(() => {
+    if (toShow !== null) {
+      service
+        .getWeather(toShow)
+        .then(returned => setWeather(returned))
+        .catch(error => console.log("could not get weather"))
+    }
+  }, [toShow])
+
   const handleFilter = event => {
     setFilter(event.target.value)
-    setToShow(null)
   }
 
   const handleClick = event => {
@@ -27,23 +45,16 @@ const App = () => {
       .getWithName(event.target.value)
       .then(returned => {
         setToShow(returned)
-        handleWeather(returned)
       })
       .catch(error => console.log("Something went wrong."))
-  }
-
-  const handleWeather = object => {
-    service.getWeather(object)
-      .then(returned => setWeather(returned))
-      .catch(error => console.log("could not get Weather"))
   }
 
   return <div>
     <div>find countries <input value={filter} onChange={handleFilter}/>
     </div>
-    <Display countries={data} filter={filter} 
-      weather={weather} toShow={toShow} 
-      handleClick={handleClick} handleWeather={handleWeather}/>
+    <Display filtered={filtered}
+      weather={weather} toShow={toShow}
+      handleClick={handleClick}/>
   </div>
 }
 

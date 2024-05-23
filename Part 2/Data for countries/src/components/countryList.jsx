@@ -25,22 +25,14 @@ const Country = ({country}) => <div>
 </div>
 
 
-const Display = ({countries, filter, toShow, handleClick, weather, handleWeather}) => {
-    console.log(weather)
+const Display = ({filtered, toShow, handleClick, weather}) => {
+    console.log("waether", weather)
+    if (filtered.length === 0) return <div>no match found</div>
+
     if (toShow !== null) return <Country country={toShow} />
 
-    const countriesCopy = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
-
-    if (countriesCopy.length === 0) return <div>No match found</div>
-
-    if (countriesCopy.length === 1) {
-        console.log("exist")
-        handleWeather(countriesCopy[0])
-        return <Country country={countriesCopy[0]} />
-    }
-
-    return <div>{countriesCopy.length > 10 ? "Too many matches, specify another filter"
-        : countriesCopy.map((each, i) => <div key={i}>{each.name.common} <button onClick={handleClick} type="button" value={each.name.common}>show</button></div>)}</div>
+    return <div>{filtered.length > 10 ? "Too many matches, specify another filter"
+        : filtered.map((each, i) => <div key={i}>{each.name.common} <button onClick={handleClick} type="button" value={each.name.common}>show</button></div>)}</div>
 }
 
 export default Display
