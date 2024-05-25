@@ -19,22 +19,20 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    setFiltered(data.filter(each => each.name.common.toLowerCase().includes(filter.toLowerCase())))
-  }, [filter])
+    const filtered = data.filter(each => each.name.common.toLowerCase().includes(filter.toLowerCase()))
+    setFiltered(filtered)
 
-  useEffect(() => {
-    if (filtered.length === 1) setToShow(filtered[0]);
-    else setToShow(null);
-  }, [filtered])
+    const toShow = filtered.length === 1 ? filtered[0] : null;
+    setToShow(toShow)
 
-  useEffect(() => {
     if (toShow !== null) {
       service
         .getWeather(toShow)
         .then(returned => setWeather(returned))
         .catch(error => console.log("could not get weather"))
     }
-  }, [toShow])
+  }, [filter])
+
 
   const handleFilter = event => {
     setFilter(event.target.value)

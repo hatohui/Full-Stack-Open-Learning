@@ -13,7 +13,7 @@ const getWithName = name =>
         .then(response => response.data)
 
 const getWeather = object => 
-    axios.get(`${weatherAPI}?lat=${object.latlng[0]}&lon=${object.latlng[1]}&appid=${KEY}`)
+    axios.get(`${weatherAPI}?lat=${object.latlng[0]}&lon=${object.latlng[1]}&appid=${KEY}&units=metric`)
         .then(response => response.data)
 
 export default {getData, getWithName, getWeather};
