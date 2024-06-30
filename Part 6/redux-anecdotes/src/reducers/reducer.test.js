@@ -1,5 +1,6 @@
 import deepFreeze from "deep-freeze";
-import reducer from "./anecdoteReducer";
+import anecdoteReducer from "./anecdoteReducer";
+import notificationReducer from "./notificationReducer";
 
 describe("Reducer", () => {
   const initState = [
@@ -13,36 +14,43 @@ describe("Reducer", () => {
   test("like is increased", () => {
     const state = initState;
     const action = {
-      type: "VOTE",
+      type: "anecdotes/vote",
+      payload: 1,
+    };
+    deepFreeze(state);
+    const newState = anecdoteReducer(state, action);
+
+    expect(newState[0]).toEqual({
+      content: "hello",
+      id: 1,
+      votes: 1,
+    });
+  });
+
+  test("New anecdote create successfully", () => {
+    const state = [];
+    const action = {
+      type: "anecdotes/create",
       payload: {
-        id: 1,
+        content: "New Note",
+        id: 2,
+        votes: 0,
       },
     };
     deepFreeze(state);
-    const newState = reducer(state, action);
-
-    expect(newState).toEqual([
-      {
-        content: "hello",
-        id: 1,
-        votes: 1,
-      },
-    ]);
+    const newState = anecdoteReducer(state, action);
+    expect(newState.length).toEqual(1);
   });
 
-  test('New anecdote create successfully', () => {
-    const state = initState
+  test("Notification can be sest", () => {
+    const state = ""
     const action = {
-        type: 'CREATE',
-        payload: {
-            content: "New Note",
-            id: 2,
-            votes: 0
-        }
+      type: "notification/set",
+      payload: "Hello"
     }
-    deepFreeze(state)
-    const newState = reducer(state, action)
 
-    expect(newState.length).toEqual(2)
+    deepFreeze(state)
+    const newState = notificationReducer(state, action)
+    expect(newState).toEqual("Hello")
   })
 });
