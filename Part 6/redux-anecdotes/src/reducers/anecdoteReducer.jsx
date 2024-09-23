@@ -12,9 +12,7 @@ const anecSlice = createSlice({
     vote(state, action) {
       const id = action.payload.id;
       return state.map((anecdote) =>
-        anecdote.id !== id
-          ? anecdote
-          : action.payload
+        anecdote.id !== id ? anecdote : action.payload
       );
     },
 

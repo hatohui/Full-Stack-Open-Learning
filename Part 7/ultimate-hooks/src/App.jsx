@@ -8,9 +8,14 @@ const useField = (type) => {
     setValue(event.target.value);
   };
 
+  const reset = () => {
+    setValue("");
+  };
+
   return {
     type,
     value,
+    reset,
     onChange,
   };
 };
@@ -36,9 +41,9 @@ const useResource = (baseUrl) => {
 };
 
 const App = () => {
-  const content = useField("text");
-  const name = useField("text");
-  const number = useField("text");
+  const { reset: contentReset, ...content } = useField("text");
+  const { reset: nameReset, ...name } = useField("text");
+  const { reset: numberReset, ...number } = useField("text");
 
   const [notes, noteService] = useResource("http://localhost:3005/notes");
   const [persons, personService] = useResource("http://localhost:3005/persons");
@@ -48,11 +53,14 @@ const App = () => {
   const handleNoteSubmit = (event) => {
     event.preventDefault();
     noteService.create({ content: content.value });
+    contentReset();
   };
 
   const handlePersonSubmit = (event) => {
     event.preventDefault();
     personService.create({ name: name.value, number: number.value });
+    nameReset();
+    numberReset();
   };
 
   return (
