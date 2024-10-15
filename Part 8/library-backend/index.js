@@ -107,12 +107,15 @@ const resolvers = {
       //Check if logged in
       const user = context.currentUser;
 
-      if (!user)
+      if (!user) {
+        console.log("errored");
+
         throw new GraphQLError("not authenticated", {
           extensions: {
             code: "BAD_USER_INPUT",
           },
         });
+      }
 
       //find author
       let author = await Author.findOne({ name: args.author });
@@ -131,9 +134,9 @@ const resolvers = {
       const addedBook = await book.save();
 
       author.books = author.books.concat(addedBook._id);
-      await author.save();
+      const newAuthor = await author.save();
 
-      return addedBook;
+      return { ...addedBook, author: newAuthor };
     },
     editAuthor: async (root, args, context) => {
       //Check if logged in
@@ -241,10 +244,8 @@ const server = new ApolloServer({
 //start the server
 startStandaloneServer(server, {
   listen: { port: 4000 },
-  context: async ({ request, response }) => {
-    console.log("request", request);
-
-    const authorization = request ? request.headers.authorization : null;
+  context: async ({ req, res }) => {
+    const authorization = req ? req.headers.authorization : null;
     if (authorization && authorization.startsWith("Bearer ")) {
       const decodedToken = jwt.verify(
         authorization.substring(7),

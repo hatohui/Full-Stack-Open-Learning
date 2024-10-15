@@ -16,6 +16,8 @@ const NewBook = () => {
   const [createBook] = useMutation(ADD_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }],
     onError: (error) => {
+      console.log(error);
+
       const msg = error.graphQLErrors.map((e) => e.message).join("\n");
       dispatch({ type: "SET", payload: msg });
       setTimeout(() => {
