@@ -4,12 +4,14 @@ import { useMutation, useQuery } from "@apollo/client";
 import Notification from "../components/Notification";
 import { useField } from "../hooks/useField";
 import { useNotificationDispatch } from "../context/NotificationContext";
+import { useUser } from "../context/currentUser";
 
 const Authors = () => {
   const result = useQuery(ALL_AUTHORS);
   const { reset: resetName, type: type, ...name } = useField("text");
   const { reset: resetBorn, ...born } = useField("number");
   const dispatch = useNotificationDispatch();
+  const currentUser = useUser();
 
   const handleAuthorUpdate = (event) => {
     event.preventDefault();
@@ -58,25 +60,29 @@ const Authors = () => {
           ))}
         </tbody>
       </table>
-      <h2>Set birthyear</h2>
-      <form onSubmit={handleAuthorUpdate}>
+      {currentUser && (
         <div>
-          <label>name </label>
-          <select {...name}>
-            <option value="null" key="null"></option>
-            {listOfNames.map((name, index) => (
-              <option key={index} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
+          <h2>Set birthyear</h2>
+          <form onSubmit={handleAuthorUpdate}>
+            <div>
+              <label>name </label>
+              <select {...name}>
+                <option value="null" key="null"></option>
+                {listOfNames.map((name, index) => (
+                  <option key={index} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>born </label>
+              <input {...born} />
+            </div>
+            <button type="submit">update author</button>
+          </form>
         </div>
-        <div>
-          <label>born </label>
-          <input {...born} />
-        </div>
-        <button type="submit">update author</button>
-      </form>
+      )}
     </div>
   );
 };

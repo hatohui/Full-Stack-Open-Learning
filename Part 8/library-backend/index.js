@@ -31,6 +31,7 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [String!]!
   }
 
   type Book {
@@ -88,6 +89,7 @@ const resolvers = {
     authorCount: async () => await Author.collection.countDocuments(),
     allBooks: async (root, args) => {
       const filter = {};
+      console.log(args);
 
       if (args.author) filter.author = args.author;
       if (args.genre) filter.genres = { $in: args.genre };
@@ -100,6 +102,12 @@ const resolvers = {
       return books;
     },
     allAuthors: async (root, args) => await Author.find({}),
+    allGenres: async (root, args) => {
+      const allBooks = await Book.find({});
+      const genreList = allBooks.map((each) => each.genres);
+      const genres = new Set([].concat.apply([], genreList));
+      return [...genres];
+    },
   },
 
   Mutation: {
@@ -108,15 +116,12 @@ const resolvers = {
       const user = context.currentUser;
 
       if (!user) {
-        console.log("errored");
-
         throw new GraphQLError("not authenticated", {
           extensions: {
             code: "BAD_USER_INPUT",
           },
         });
       }
-
       //find author
       let author = await Author.findOne({ name: args.author });
 
@@ -135,8 +140,7 @@ const resolvers = {
 
       author.books = author.books.concat(addedBook._id);
       const newAuthor = await author.save();
-
-      return { ...addedBook, author: newAuthor };
+      return { ...addedBook.toObject(), author: newAuthor };
     },
     editAuthor: async (root, args, context) => {
       //Check if logged in

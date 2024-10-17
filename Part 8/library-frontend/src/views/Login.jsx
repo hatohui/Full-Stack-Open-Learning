@@ -1,9 +1,9 @@
 import Notification from "../components/Notification";
 import NavBar from "../components/NavBar";
 import { useField } from "../hooks/useField";
-import { useApolloClient, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { LOGIN } from "../queries";
-import { useUser, useUserDispatch } from "../context/currentUser";
+import { useUserDispatch } from "../context/currentUser";
 import { useNotificationDispatch } from "../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
 
@@ -13,8 +13,6 @@ const Login = () => {
   const dispatchU = useUserDispatch();
   const dispatchN = useNotificationDispatch();
   const navigate = useNavigate();
-  const currentUser = useUser();
-  const client = useApolloClient();
 
   const [login] = useMutation(LOGIN, {
     onCompleted: (data) => {
@@ -25,6 +23,10 @@ const Login = () => {
           token: "Bearer " + data.login.value,
         },
       });
+      dispatchN({ type: "SET", payload: "User logged in successfully" });
+      setTimeout(() => {
+        dispatchN({ type: "RESET" });
+      }, 5000);
 
       navigate(-1);
     },
@@ -46,24 +48,6 @@ const Login = () => {
     resetUser();
     resetPass();
   };
-
-  const handleLogout = (event) => {
-    event.preventDefault();
-    dispatchU({ type: "LOGOUT", payload: null });
-    client.resetStore();
-  };
-
-  console.log(currentUser);
-
-  if (currentUser)
-    return (
-      <div>
-        <NavBar />
-        <Notification />
-        <div>currently logged in as: </div>
-        <button onClick={handleLogout}>LOGOUT</button>
-      </div>
-    );
 
   return (
     <>

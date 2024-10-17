@@ -13,9 +13,9 @@ const App = () => {
 
   useEffect(() => {
     const user = window.localStorage.getItem("user");
-
     if (user) {
       dispatch({ type: "LOGIN", payload: JSON.parse(user) });
+      navigate(-1);
     } else {
       navigate("/login");
     }

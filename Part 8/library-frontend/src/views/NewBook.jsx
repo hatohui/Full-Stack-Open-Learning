@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_BOOK, ALL_BOOKS } from "../queries";
 import Notification from "../components/Notification";
 import { useNotificationDispatch } from "../context/NotificationContext";
+import { useNavigate } from "react-router-dom";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -12,17 +13,30 @@ const NewBook = () => {
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
   const dispatch = useNotificationDispatch();
+  const navigate = useNavigate();
 
   const [createBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }],
-    onError: (error) => {
-      console.log(error);
+    onCompleted: () => {
+      console.log("hi?");
 
+      dispatch({ type: "SET", payload: "Added book." });
+      setTimeout(() => {
+        dispatch({ type: "RESET" });
+      }, 5000);
+    },
+    onError: (error) => {
       const msg = error.graphQLErrors.map((e) => e.message).join("\n");
       dispatch({ type: "SET", payload: msg });
       setTimeout(() => {
         dispatch({ type: "RESET" });
       }, 5000);
+    },
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        console.log("here", allBooks);
+        return { allBooks: allBooks.concat(response.data.addBook) };
+      });
+      console.log(cache);
     },
   });
 
@@ -36,6 +50,7 @@ const NewBook = () => {
     setAuthor("");
     setGenres([]);
     setGenre("");
+    navigate("/books");
   };
 
   const addGenre = () => {
