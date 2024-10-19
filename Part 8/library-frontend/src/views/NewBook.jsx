@@ -5,6 +5,7 @@ import { ADD_BOOK, ALL_BOOKS } from "../queries";
 import Notification from "../components/Notification";
 import { useNotificationDispatch } from "../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
+import { updateBookCache } from "./Books";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -16,14 +17,6 @@ const NewBook = () => {
   const navigate = useNavigate();
 
   const [createBook] = useMutation(ADD_BOOK, {
-    onCompleted: () => {
-      console.log("hi?");
-
-      dispatch({ type: "SET", payload: "Added book." });
-      setTimeout(() => {
-        dispatch({ type: "RESET" });
-      }, 5000);
-    },
     onError: (error) => {
       const msg = error.graphQLErrors.map((e) => e.message).join("\n");
       dispatch({ type: "SET", payload: msg });
@@ -32,11 +25,11 @@ const NewBook = () => {
       }, 5000);
     },
     update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        console.log("here", allBooks);
-        return { allBooks: allBooks.concat(response.data.addBook) };
-      });
-      console.log(cache);
+      updateBookCache(
+        cache,
+        { query: ALL_BOOKS, variables: { genre: null, author: null } },
+        response.data.addBook
+      );
     },
   });
 
