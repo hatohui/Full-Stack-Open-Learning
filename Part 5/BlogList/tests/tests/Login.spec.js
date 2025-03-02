@@ -94,7 +94,7 @@ describe('When logged in', () => {
   })
 
   test('user with valid permission can delete', async({page}) => {
-    await createBlog(page, "Stuupid Zarachy", "ColonDHappyFace", "onlyfan.next")
+    await createBlog(page, "User_1", "Blog_Author", "Blog_Link")
     await page.getByText('View').click()
     page.on('dialog',async dialog => await dialog.accept());
     await page.getByTestId('delete').click()
@@ -103,7 +103,7 @@ describe('When logged in', () => {
   })
 
   test('only user created the blog can see the delete button', async({page}) => {
-    await createBlog(page, "Stuupid Zarachy", "ColonDHappyFace", "onlyfan.next")
+    await createBlog(page, "TestPage", "Blog_Author", "Blog_Link")
     await page.getByText('Log out').click()
     await loginWith(page, 'admin2', 'test')
     await page.getByText('View').click()
@@ -111,9 +111,9 @@ describe('When logged in', () => {
   })
 
   test.only('blogs are sorted by likes', async({page}) => {
-    await createBlog(page, "Second", "ColonDHappyFace", "onlyfan.next")
-    await createBlog(page, "Third", "ColonDHappyFace", "onlyfan.next")
-    await createBlog(page, "First", "ColonDHappyFace", "onlyfan.next")
+    await createBlog(page, "Second", "Blog_Author", "Blog_Link")
+    await createBlog(page, "Third", "Blog_Author", "Blog_Link")
+    await createBlog(page, "First", "Blog_Author", "Blog_Link")
     const viewButtons = await page.getByRole('button', {name: 'View'}).all()
     await viewButtons[0].click()
     await page.getByText('Title: Second').waitFor()
