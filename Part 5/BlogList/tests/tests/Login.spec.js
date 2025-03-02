@@ -87,7 +87,7 @@ describe('When logged in', () => {
   })
 
   test('a blog can be liked', async ({ page }) => {
-    await createBlog(page, "Stuupid Zarachy", "ColonDHappyFace", "onlyfan.next")
+    await createBlog(page, "User_1", "Blog_Author", "Blog_Link")
     await page.getByText('View').click()
     await page.getByTestId('like').click()
     await expect(page.getByText('Likes 1')).toBeVisible()
